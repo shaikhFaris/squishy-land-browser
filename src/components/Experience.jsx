@@ -4,9 +4,6 @@ import { useRef, useState } from "react";
 import { Map } from "./Map";
 import { Physics } from "@react-three/rapier";
 import CharacterController from "./CharacterController";
-import { Character } from "./Character";
-import PlayerChar from "./Player";
-import { Vector3 } from "three";
 
 const maps = {
   castle_on_hills: {
@@ -31,13 +28,7 @@ const maps = {
   },
 };
 
-export const Experience = ({ otherPlayerState }) => {
-  const playerState = useRef({
-    position: new Vector3(),
-    rotation: 0,
-    animation: "idle",
-  });
-
+export const Experience = () => {
   const shadowCameraRef = useRef();
   const { map } = useControls("Map", {
     map: {
@@ -74,7 +65,6 @@ export const Experience = ({ otherPlayerState }) => {
           model={`models/${map}.glb`}
         />
         <CharacterController initialPostion={[1, 1, 0]} />
-        <PlayerChar playerState={otherPlayerState} />
       </Physics>
     </>
   );

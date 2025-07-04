@@ -6,19 +6,12 @@ import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
 import { useKeyboardControls } from "@react-three/drei";
 import { degToRad } from "three/src/math/MathUtils.js";
-import { socket } from "./socket";
 
 export default function CharacterCotroller({ initialPostion }) {
-  const { WALK_SPEED, RUN_SPEED, ROTATION_SPEED } = useControls("controls", {
-    WALK_SPEED: { value: 0.8, min: 0.1, max: 4, step: 0.1 },
-    RUN_SPEED: { value: 2.0, min: 0.1, max: 12, step: 0.1 },
-    ROTATION_SPEED: {
-      value: degToRad(0.5),
-      min: degToRad(0.1),
-      max: degToRad(5),
-      step: degToRad(0.1),
-    },
-  });
+  const ROTATION_SPEED = degToRad(1);
+  const WALK_SPEED = 0.8;
+  const RUN_SPEED = 2;
+
   const rb = useRef();
   const [, get] = useKeyboardControls();
 
@@ -119,24 +112,6 @@ export default function CharacterCotroller({ initialPostion }) {
       cameraLookAt.current.lerp(cameraLookAtWorldPostion.current, 0.1);
 
       camera.lookAt(cameraLookAt.current);
-    }
-
-    // passing data to sockets
-    if (
-      prevPlayerState.current.animation !== animation ||
-      !prevPlayerState.current.position.equals(vel) ||
-      prevPlayerState.current.rotation !== character.current.rotation.y
-    ) {
-      socket.emit("player position", {
-        animation: animation,
-        position: vel,
-        rotation: character.current.rotation.y,
-      });
-
-      //update prev state
-      prevPlayerState.current.animation = animation;
-      prevPlayerState.current.position.copy(vel);
-      prevPlayerState.current.rotation = character.current.rotation.y;
     }
   });
 
