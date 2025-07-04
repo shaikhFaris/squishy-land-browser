@@ -8,7 +8,7 @@ import { useKeyboardControls } from "@react-three/drei";
 import { degToRad } from "three/src/math/MathUtils.js";
 
 export default function CharacterCotroller({ initialPostion }) {
-  const ROTATION_SPEED = degToRad(1);
+  const ROTATION_SPEED = degToRad(1.5);
   const WALK_SPEED = 0.8;
   const RUN_SPEED = 2;
 
@@ -119,7 +119,7 @@ export default function CharacterCotroller({ initialPostion }) {
     <RigidBody colliders={false} position={initialPostion} lockRotations ref={rb}>
       <group ref={container}>
         <group ref={cameraTarget} position-z={1.5} />
-        <group ref={cameraPosition} position-y={3} position-z={-4} />
+        <group ref={cameraPosition} position-y={1.5} position-z={-3} />
         <group ref={character}>
           <Character scale={0.18} position-y={-0.25} animation={animation} />
         </group>
