@@ -1,11 +1,12 @@
 import { Environment, OrbitControls, OrthographicCamera } from "@react-three/drei";
 import { useControls } from "leva";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Map } from "./Map";
 import { Physics } from "@react-three/rapier";
 import CharacterController from "./CharacterController";
 import { Character } from "./Character";
 import PlayerChar from "./Player";
+import { Vector3 } from "three";
 
 const maps = {
   castle_on_hills: {
@@ -30,11 +31,17 @@ const maps = {
   },
 };
 
-export const Experience = ({ Player }) => {
+export const Experience = ({ otherPlayerState }) => {
+  const playerState = useRef({
+    position: new Vector3(),
+    rotation: 0,
+    animation: "idle",
+  });
+
   const shadowCameraRef = useRef();
   const { map } = useControls("Map", {
     map: {
-      value: "castle_on_hills",
+      value: "medieval_fantasy_book",
       options: Object.keys(maps),
     },
   });
@@ -66,8 +73,8 @@ export const Experience = ({ Player }) => {
           position={maps[map].position} //  postion of the map
           model={`models/${map}.glb`}
         />
-        <CharacterController initialPostion={[2, 3, 0]} />
-        <PlayerChar Player={Player} />
+        <CharacterController initialPostion={[1, 1, 0]} />
+        <PlayerChar playerState={otherPlayerState} />
       </Physics>
     </>
   );

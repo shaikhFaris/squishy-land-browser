@@ -1,24 +1,29 @@
 import { Vector3 } from "three";
 import { CapsuleCollider, RigidBody } from "@react-three/rapier";
 import { Character } from "./Character";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { useFrame } from "@react-three/fiber";
+import { useEffect } from "react";
 
-export default function PlayerChar({ Player }) {
+export default function PlayerChar({ playerState }) {
   const rb = useRef();
-  // example: you can later use rb.current for position/velocity etc.
+  const char = useRef();
+  const [animation, setanimation] = useState(playerState.current.animation);
 
-  useEffect(() => {
-    console.log(Player.Pposition);
-    // rb.current.position = Player.Pposition;
-    rb.current.setTranslation(
-      new Vector3(Player.Pposition[0], Player.Pposition[1], Player.Pposition[2]),
-      true
-    );
-  }, [Player]);
+  useFrame(() => {
+    if (!rb.current || !char.current || !playerState) return;
+    rb.current.setLinvel(playerState.current.position, true);
+    char.current.rotation.y = playerState.current.rotation;
+    setanimation(playerState.current.animation);
+  });
+
+  // No — useEffect does not get triggered when the value of a ref (ref.current) changes.
 
   return (
     <RigidBody ref={rb} position={[1, 1, 0]} colliders={false} lockRotations>
-      <Character scale={0.18} position={[0, -0.25, 0]} animation={"idle"} />
+      <group ref={char}>
+        <Character scale={0.18} position={[0, -0.25, 0]} animation={animation} />
+      </group>
       <CapsuleCollider args={[0.08, 0.15]} />
     </RigidBody>
   );

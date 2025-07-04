@@ -50,14 +50,19 @@ export default function CharacterCotroller({ initialPostion }) {
     x: 0,
     z: 0,
   };
+  const prevPlayerState = useRef({
+    position: new Vector3(),
+    rotation: 0,
+    animation: "idle",
+  });
 
   useFrame(({ camera }) => {
     movement = {
       x: 0,
       z: 0,
     };
+    const vel = rb.current.linvel();
     if (rb.current) {
-      const vel = rb.current.linvel();
       if (get().forward) {
         movement.z = 1;
       }
@@ -115,28 +120,23 @@ export default function CharacterCotroller({ initialPostion }) {
 
       camera.lookAt(cameraLookAt.current);
     }
-  });
 
-  const prevPos = useRef(new Vector3());
-
-  const threshold = 0.1; // increaase to inmprove other players smoothness
-
-  useFrame(() => {
-    if (!rb.current || !character.current) return;
-
-    const { x, y, z } = rb.current.translation();
-    const pos = prevPos.current;
-
-    const dx = Math.abs(pos.x - x);
-    const dy = Math.abs(pos.y - y);
-    const dz = Math.abs(pos.z - z);
-
-    if (dx > threshold || dy > threshold || dz > threshold) {
-      socket.emit("player postion", {
-        position: pos,
+    // passing data to sockets
+    if (
+      prevPlayerState.current.animation !== animation ||
+      !prevPlayerState.current.position.equals(vel) ||
+      prevPlayerState.current.rotation !== character.current.rotation.y
+    ) {
+      socket.emit("player position", {
+        animation: animation,
+        position: vel,
+        rotation: character.current.rotation.y,
       });
-      // console.log("Position changed:", { x, y, z });
-      pos.set(x, y, z);
+
+      //update prev state
+      prevPlayerState.current.animation = animation;
+      prevPlayerState.current.position.copy(vel);
+      prevPlayerState.current.rotation = character.current.rotation.y;
     }
   });
 
